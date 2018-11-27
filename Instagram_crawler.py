@@ -1,6 +1,9 @@
 
 # coding: utf-8
 
+# In[1]:
+
+
 #-*- coding:utf-8 -*-
 
 import requests, os
@@ -20,22 +23,38 @@ import sys
 import os
 
 
+# In[2]:
+
 
 class Instagram_crawler:
-    def crawling_data(self, tag, no_of_scroll, num):
+    def crawling_data(self, tag, no_of_scroll, start_page):
         
         self.tag = tag
         self.tag_url = "www.instagram.com/explore/tags/" + self.tag
         self.tag_url = "http://" + parse.quote(self.tag_url)
         print('\n', self.tag_url, '\n')
         
+        option = webdriver.ChromeOptions()
+        option.add_argument('headless')
+        option.add_argument('disable-gpu')
+
+        self.browser = webdriver.Chrome('chromedriver', options=option)
+
+        # browser = webdriver.Chrome()
+        self.browser.get(self.tag_url)
+        time.sleep(3)
+        
         print('start to get shortcode')
+        
+        for i in range(1, start_page):
+            self.scroll_page()
+        
         i = 0
         total_saved_data = 0
         shortcodes = []
         while i < no_of_scroll:
             # get html code
-            soup = self.scroll_page(num + i)
+            soup = self.scroll_page()
             # get the list of shortcode
             shortcodes.extend(self.get_shortcode_list(soup))
             print()
@@ -46,31 +65,16 @@ class Instagram_crawler:
         print('  saved data :', saved_data)
         
     # scroll url page num times and get html data
-    def scroll_page(self, num):
-        option = webdriver.ChromeOptions()
-        option.add_argument('headless')
-        option.add_argument('disable-gpu')
+    def scroll_page(self):
+        body = self.browser.find_element_by_tag_name("body")   
+        no_of_pagedowns = 8;
+        
+        while no_of_pagedowns:
+            body.send_keys(Keys.PAGE_DOWN)
+            time.sleep(1)
+            no_of_pagedowns-=1
 
-        browser = webdriver.Chrome('chromedriver', options=option)
-
-        # browser = webdriver.Chrome()
-        browser.get(self.tag_url)
-        time.sleep(3)
-
-        body = browser.find_element_by_tag_name("body")
-
-        print(" page scroll start (", num, ' times)')
-
-        while num:
-            no_of_pagedowns = 8;
-            num-=1
-            while no_of_pagedowns:
-                body.send_keys(Keys.PAGE_DOWN)
-                time.sleep(1)
-                no_of_pagedowns-=1
-
-        print(" page scrolled")
-        response = browser.page_source
+        response = self.browser.page_source
         soup = BeautifulSoup(response, 'lxml')
         print(" read the HTML file")
 
@@ -210,17 +214,24 @@ class Instagram_crawler:
 
         return saved_data
 
-    
+
+# In[3]:
+
 
 tag = input("\n** 원하는 태그를 입력하세요: \n>>> ")
-no_of_scroll = input("\n** 스크롤 할 페이지 수를 입력하세요.\n 한 페이지마다 약 40~45개의 데이터가 획득됩니다: \n>>> ")
+no_of_scroll = input("\n** 스크롤 할 페이지 수를 입력하세요.\n 한 페이지마다 약 35~40개의 데이터가 획득됩니다: \n>>> ")
 start_page = input("\n** 스크롤을 시작할 페이지 번호를 입력하세요.\n 맨 처음 데이터부터 가져오고 싶다면 1을 입력하세요: \n>>> ")
 
 
+# In[4]:
+
 
 ic = Instagram_crawler()
+
 start = time.time()
+
 ic.crawling_data(tag, int(no_of_scroll), int(start_page))
+
 end = time.time()
 seconds = int(end - start)
 minutes, seconds = divmod(seconds, 60)
