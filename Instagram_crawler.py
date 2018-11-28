@@ -57,6 +57,7 @@ class Instagram_crawler:
             soup = self.scroll_page()
             # get the list of shortcode
             shortcodes.extend(self.get_shortcode_list(soup))
+            shortcodes = list(set(shortcodes))
             print()
             i+=1
         
