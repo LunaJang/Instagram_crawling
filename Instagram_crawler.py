@@ -56,12 +56,12 @@ class Instagram_crawler:
             # get html code
             soup = self.scroll_page()
             # get the list of shortcode
-            shortcodes.extend(self.get_shortcode_list(soup))
-            shortcodes = list(set(shortcodes))
+            shortcodes.extend(self.get_shortcode_list(soup))            
             print()
             i+=1
         
         print('\nstart to get data')
+        shortcodes = list(set(shortcodes))
         saved_data = self.save_data(shortcodes)
         print('  saved data :', saved_data)
         
@@ -167,6 +167,18 @@ class Instagram_crawler:
         saved_data = 0
         file_name = "./dataset/label_" + self.tag +  ".json"
         self.create_folder("./dataset/img/" + self.tag)
+        
+        if not os.path.isfile(file_name):
+            saved_data = 0
+        else:
+            with open(file_name, encoding='UTF-16') as feedsjson:
+                old_feeds = []
+                old_feeds.extend(json.load(feedsjson))
+                # saved_data = len(old_feeds)
+                temp = old_feeds[-1]
+                temp = temp[0]
+                saved_data = int(temp["img_name"]) + 1
+                
         
         for shortcode in shortcodes:
             print("[ ", i, ' ]')
