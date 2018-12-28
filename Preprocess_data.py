@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # In[1]:
@@ -65,7 +65,7 @@ class ProcessData:
         self.new_labels = [] # 전처리 된 labels
         self.new_img_names = [] # 전처리 된 img names 
         duplicate_img_name = [] # 중복 데이터들의 img name
-        print("\n중복 데이터 삭제를 시작합니다.")
+        print("\n중복 데이터 검색을 시작합니다.")
         
         for label in self.labels:   
             if label[0]["page_url"] not in page_urls:
@@ -73,18 +73,31 @@ class ProcessData:
                 page_urls.append(label[0]["page_url"])
                 self.new_img_names.append(label[0]["img_name"])
             else:
+                index = page_urls.index(label[0]["page_url"])
+                name = self.new_img_names[index]
+                print(label[0]["img_name"], "가 ", name, "과 중복됩니다.")
                 duplicate_img_name.append(label[0]["img_name"])
+                
+        print("중복된 파일 : ", duplicate_img_name)
+        user_select = input("**중복된 파일을 삭제하시겠습니까? (1.예 2. 아니오)\n>>> ")
         
-        for img_name in duplicate_img_name:
-            file = self.img_folder + "/" + str(img_name) + ".jpg"
-            if os.path.isfile(file):
-                os.remove(file)
-            
-        with open(self.json_file, mode='w', encoding='UTF-16', errors='ignore') as f:
-            feed = json.dumps(self.new_labels, ensure_ascii=False, indent=2)
-            f.write(feed)
-              
-        print("총 ", len(duplicate_img_name), "개의 중복 데이터를 삭제하였습니다.")
+        if(user_select == "1"):        
+            for img_name in duplicate_img_name:
+                file = self.img_folder + "/" + str(img_name) + ".jpg"
+                if os.path.isfile(file):
+                    os.remove(file)
+
+            with open(self.json_file, mode='w', encoding='UTF-16', errors='ignore') as f:
+                feed = json.dumps(self.new_labels, ensure_ascii=False, indent=2)
+                f.write(feed)
+
+            print("총 ", len(duplicate_img_name), "개의 중복 데이터를 삭제하였습니다.")
+        else:
+            self.new_labels = self.labels
+            self.new_img_names = []
+            for label in self.labels:
+                self.new_img_names.append(label[0]["img_name"])
+            print("중복 데이터를 삭제하지 않습니다.")
         
     def delete_selected_data(self, select):
         file = self.img_folder + "/" + select + ".jpg"        
