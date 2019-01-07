@@ -5,7 +5,7 @@
 * beautifulsoup, selenium 라이브러리의 설치가 필요합니다
 
 * instagram_crawler.ipnb 파일과 같은 디렉토리에 
-chromedriver.exe 파일과 /dataset/img 폴더가 있어야 합니다.
+chromedriver.exe 파일이 있어야 합니다.
 
 ## 사용법
 
