@@ -108,7 +108,7 @@ class RenameData:
     def rename_data(self):
         print(" 데이터의 이름을 변경합니다.")
         
-        cnt = 0
+        cnt = self.new_start
         for label in self.labels:   
             old_name = self.img_folder + "/" + str(label[0]["img_name"]) + ".jpg"
             new_name = self.img_folder + "/" + str(cnt) + "a.jpg"
@@ -118,7 +118,7 @@ class RenameData:
             
             cnt += 1
         
-        for i in range(0,cnt):   
+        for i in range(self.new_start,cnt):   
             old_name = self.img_folder + "/" + str(i) + "a.jpg"            
             new_name = self.img_folder + "/" + str(i) + ".jpg"
             
